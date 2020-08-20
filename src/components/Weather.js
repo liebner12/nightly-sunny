@@ -53,11 +53,15 @@ class Weather extends React.Component {
       favoritesWidget,
       tempHourly,
       tempNextDays,
+      favList: [],
     };
   }
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(this.getWeatherByLoc);
+    if (window.location.href.split("/")[3] == "favorites") {
+      this.setState({ navbarValue: "favorites" });
+    }
   }
 
   getWeatherByLoc = async (position) => {
@@ -80,11 +84,9 @@ class Weather extends React.Component {
         })
       );
       const response = await api_call.json();
-      if (this.state.navbarValue === "favorites") {
-        this.addFavorite(response);
-      } else {
-        this.getResults(response);
-      }
+      this.state.navbarValue === "favorites"
+        ? this.addFavorite(response)
+        : this.getResults(response);
     }
   };
 
@@ -123,6 +125,9 @@ class Weather extends React.Component {
         },
       ],
     });
+    this.setState({
+      favList: [...this.state.favList, this.state.favoritesWidget],
+    })
   }
 
   getResults(response) {
@@ -156,6 +161,7 @@ class Weather extends React.Component {
         this.toHour
       ),
     });
+    
   }
 
   weatherIcon(weatherId, hour) {
@@ -250,9 +256,11 @@ class Weather extends React.Component {
           </Route>
           <Route path="/favorites">
             <Favorites
+              favList={this.state.favList}
               handleNavClick={this.handleNavClick}
               loadWeather={this.getWeather}
               favoritesWidget={this.state.favoritesWidget}
+              weatherIcon={this.weatherIcon}
             />
           </Route>
         </Switch>

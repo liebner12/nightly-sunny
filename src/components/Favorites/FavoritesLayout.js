@@ -8,10 +8,14 @@ import HomeIcon from "@material-ui/icons/Home";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
-import { Card } from "@material-ui/core";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import List from "../Main/List";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const useStyles = makeStyles({
   container: {
     minHeight: "100vh",
+    marginBottom: "80px",
   },
   button: {
     textDecoration: "none",
@@ -33,10 +37,18 @@ const useStyles = makeStyles({
   },
   form: {
     flex: "1",
-    marginLeft: "1rem",
+    display: "flex",
   },
   textField: {
-    width: "100%",
+    boxSizing: "border-box",
+    flex: "1",
+    marginLeft: "1rem",
+  },
+  widget: {
+    margin: "1rem 0",
+  },
+  widgetText: {
+    marginBottom: "1rem",
   },
 });
 
@@ -45,10 +57,6 @@ export default function FavoritesLayout(props) {
   const handleClick = () => {
     props.handleNavClick(0);
   };
-  const handleClickButton = () => {
-    props.addWidget();
-  };
-
   return (
     <div>
       <Container className={classes.container}>
@@ -78,7 +86,6 @@ export default function FavoritesLayout(props) {
               aria-label="add"
               type="submit"
               className={classes.fab}
-              onClick={handleClickButton}
             >
               <AddIcon />
             </Fab>
@@ -91,13 +98,27 @@ export default function FavoritesLayout(props) {
             />
           </form>
         </div>
-        {props.list.map((item) => 
-          
-          (<div>
-            <h1>{item[0].temp}</h1>
-          </div>)
-        )}
-        <h1>{props.favoritesWidget[0].date}</h1>
+        {props.favList.map((item, id) => (
+          <Card key={id} className={classes.widget}>
+            <CardContent>
+              <div className={classes.widgetText}>
+                <Typography variant="h4">{item[0].city}</Typography>
+                <Typography variant="h5">
+                  {item[0].temp}&deg;C &nbsp;
+                  <FontAwesomeIcon
+                    icon={props.weatherIcon(item[0].weatherId, item[0].hour)}
+                    className={classes.icon}
+                  />
+                </Typography>
+              </div>
+
+              <List
+                tempNextDays={item[1].favoritesTempNextDays}
+                weatherIcon={props.weatherIcon}
+              />
+            </CardContent>
+          </Card>
+        ))}
       </Container>
     </div>
   );

@@ -14,6 +14,8 @@ import Hidden from "@material-ui/core/Hidden";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import SearchDesktop from "./SearchDesktop";
 import { Link } from "react-router-dom";
+import { grey } from "@material-ui/core/colors";
+import yellow from "@material-ui/core/colors/yellow";
 const useStyles = makeStyles({
   textContainer: {
     minHeight: "80vh",
@@ -53,6 +55,25 @@ const useStyles = makeStyles({
     flexDirection: "column",
     alignSelf: "center",
   },
+  fontWeight: {
+    fontWeight: "400",
+    color: grey[500],
+  },
+  hr: {
+    border: 0,
+    backgroundColor: yellow[500],
+    height: "2px",
+    margin: "1rem 0",
+  },
+  listBox: {
+    boxSizing: "border-box",
+    width: "100%",
+    background: "rgba(30,30,30,1)",
+    marginBottom: "80px",
+    display: "grid",
+    alignItems: "center",
+    padding: "2rem 0",
+  },
 });
 
 export default function WeatherLayout(props) {
@@ -89,7 +110,7 @@ export default function WeatherLayout(props) {
               <Typography variant="h1">{props.temp}&deg;</Typography>
               <Typography variant="h6">
                 <FontAwesomeIcon
-                  icon={props.weatherIcon(props.weatherId)}
+                  icon={props.weatherIcon(props.weatherId,props.hour)}
                   className={classes.icon}
                 />
                 &nbsp;
@@ -114,10 +135,16 @@ export default function WeatherLayout(props) {
         </div>
       </div>
       <section className={classes.section}>
-        <List
-          tempNextDays={props.tempNextDays}
-          weatherIcon={props.weatherIcon}
-        />
+        <div className={classes.listBox}>
+          <Container>
+            <Typography className={classes.fontWeight}>NEXT 5 DAYS</Typography>
+            <hr className={classes.hr}></hr>
+            <List
+              tempNextDays={props.tempNextDays}
+              weatherIcon={props.weatherIcon}
+            />
+          </Container>
+        </div>
         <Details details={props.details} />
       </section>
     </div>
