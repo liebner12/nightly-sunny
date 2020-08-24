@@ -219,7 +219,9 @@ class Weather extends React.Component {
   }
 
   toDate(date) {
-    return date.split(" ")[0].slice(5).replace("-", ".");
+    let dateStr = date.split(" ")[0].slice(5);
+    dateStr = dateStr.substr(3,2)+"."+dateStr.substr(0,2)
+    return dateStr
   }
 
   toHour(date) {
