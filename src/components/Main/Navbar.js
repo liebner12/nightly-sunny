@@ -8,26 +8,33 @@ import SearchIcon from "@material-ui/icons/Search";
 import Hidden from "@material-ui/core/Hidden";
 import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   navbar: {
     width: "100%",
     position: "fixed",
     bottom: 0,
     zIndex: 1,
+    backgroundColor: theme.palette.navbar.background,
   },
-});
+  label: {
+    color: theme.palette.primary.secondary,
+    "&:active": {
+      color: theme.palette.primary.secondary,
+    },
+  },
+}));
 
 export default function Navbar(props) {
   const classes = useStyles();
   const history = useHistory();
   return (
-    <Hidden smUp>
+    <Hidden mdUp>
       <BottomNavigation
         value={props.navbarValue}
         onChange={(event, newValue) => {
           if (newValue === 1) {
             props.handleSearchOpen(true);
-          } else{
+          } else {
             props.handleSearchOpen(false);
           }
           props.handleNavClick(newValue);

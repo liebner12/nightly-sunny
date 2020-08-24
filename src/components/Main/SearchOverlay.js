@@ -4,10 +4,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
-import MuiAlert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
-
-const useStyles = makeStyles({
+import Paper from "@material-ui/core/paper";
+const useStyles = makeStyles((theme) => ({
   overlay: {
     display: "grid",
     placeContent: "center",
@@ -15,9 +13,8 @@ const useStyles = makeStyles({
     padding: "2rem",
     left: "5%",
     width: "90%",
-    background: "rgba(30,30,30,0.8)",
-    backdropFilter: "blur(100px)",
-    top: 0,
+    top: "-2px",
+    backgroundColor: theme.palette.navbar.background,
     borderRadius: "10px",
     transform: "translateY(-100%)",
   },
@@ -41,15 +38,10 @@ const useStyles = makeStyles({
       transform: "translateY(40%)",
     },
   },
-});
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+}));
 
 export default function SearchOverlay(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
 
@@ -58,11 +50,7 @@ export default function SearchOverlay(props) {
       function handleClickOutside(event) {
         if (ref.current && !ref.current.contains(event.target)) {
           props.handleSearchOpen(false);
-          if (props.navbarValue === "favorites") {
-            props.handleNavClick("favorites");
-          } else if (props.navbarValue === "favorites") {
-            props.handleNavClick("favorites");
-          }
+          props.handleNavClick(0);
         }
       }
       document.addEventListener("mousedown", handleClickOutside);
@@ -73,52 +61,38 @@ export default function SearchOverlay(props) {
   }
 
   const handleClick = () => {
-    if (props.error === true) {
-      setOpen(true);
-    } else {
-      props.handleSearchOpen(false);
-      props.handleNavClick(0);
-    }
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpen(false);
+    props.handleSearchOpen(false);
+    props.handleNavClick(0);
   };
 
   return (
-    <Container
+    <Paper
       className={`${classes.overlay} ${
         props.openSearch === false ? null : classes.overlayOpen
       }`}
       ref={props.openSearch ? wrapperRef : null}
     >
-      <form onSubmit={props.loadWeather} autoComplete="off">
-        <TextField
-          label="town"
-          variant="outlined"
-          className={classes.textfield}
-          name="town"
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          size="large"
-          startIcon={<SearchIcon />}
-          type="submit"
-          onClick={handleClick}
-        >
-          Search
-        </Button>
-      </form>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          Wrong town name!
-        </Alert>
-      </Snackbar>
-    </Container>
+      <Container>
+        <form onSubmit={props.loadWeather} autoComplete="off">
+          <TextField
+            label="City"
+            variant="outlined"
+            className={classes.textfield}
+            name="city"
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            size="large"
+            startIcon={<SearchIcon />}
+            type="submit"
+            onClick={handleClick}
+          >
+            Search
+          </Button>
+        </form>
+      </Container>
+    </Paper>
   );
 }

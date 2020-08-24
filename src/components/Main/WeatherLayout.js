@@ -14,21 +14,12 @@ import Hidden from "@material-ui/core/Hidden";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import SearchDesktop from "./SearchDesktop";
 import { Link } from "react-router-dom";
-import { grey } from "@material-ui/core/colors";
-import yellow from "@material-ui/core/colors/yellow";
-const useStyles = makeStyles({
-  textContainer: {
-    minHeight: "80vh",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    marginBottom: "80px",
-  },
-  section: {
-    marginBottom: "100px",
-  },
-  nav: {
+import Paper from "@material-ui/core/Paper";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
+
+const useStyles = makeStyles((theme) => ({
+  topNav: {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -38,10 +29,9 @@ const useStyles = makeStyles({
     display: "flex",
     alignItems: "center",
   },
-  desktopView: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "1rem",
+  mainTemp: {
+    marginTop: "9rem",
+    padding: "2rem 0",
   },
   button: {
     textDecoration: "none",
@@ -55,26 +45,57 @@ const useStyles = makeStyles({
     flexDirection: "column",
     alignSelf: "center",
   },
-  fontWeight: {
-    fontWeight: "400",
-    color: grey[500],
-  },
   hr: {
     border: 0,
-    backgroundColor: yellow[500],
+    backgroundColor: theme.palette.hr.background,
     height: "2px",
     margin: "1rem 0",
   },
-  listBox: {
-    boxSizing: "border-box",
-    width: "100%",
-    background: "rgba(30,30,30,1)",
-    marginBottom: "80px",
+  grid: {
+    marginBottom: "100px",
     display: "grid",
-    alignItems: "center",
-    padding: "2rem 0",
+    gridTemplateColumns: "100%",
+    [theme.breakpoints.up("md")]: {
+      gridTemplateColumns: "1fr 1fr",
+      gridColumnGap: "5%",
+    },
+    alignItems: "start",
   },
-});
+  gridItem: {
+    padding: "2rem 0",
+    margin: "2rem 0",
+    height: "100%",
+  },
+  topPage: {
+    padding: "2rem 0",
+    marginBottom: "2rem",
+    [theme.breakpoints.up("md")]: {
+      margin: "2rem 0",
+    },
+  },
+  marginItems: {
+    margin: "2rem",
+  },
+  desktopSearch: {
+    marginTop: "9rem",
+    alignSelf: "center",
+  },
+  hourly: {
+    [theme.breakpoints.up("md")]: {
+      gridColumnStart: 1,
+      gridColumnEnd: 3,
+    },
+  },
+  snackbar: {
+    [theme.breakpoints.down("xs")]: {
+      bottom: 90,
+    },
+  },
+}));
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function WeatherLayout(props) {
   const classes = useStyles();
@@ -83,34 +104,33 @@ export default function WeatherLayout(props) {
   };
   return (
     <div>
-      <div className={classes.textContainer}>
-        <Container>
-          <div className={classes.nav}>
-            <div className={classes.cityText}>
-              <LocationOnOutlinedIcon /> &nbsp;
-              <Typography variant="h6"> {props.city}</Typography>
-            </div>
-            <Link className={classes.button} to="/favorites">
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.button}
-                size="large"
-                startIcon={<FavoriteIcon />}
-                onClick={handleClick}
-              >
-                Favorites
-              </Button>
-            </Link>
+      <Container>
+        <div className={classes.topNav}>
+          <div className={classes.cityText}>
+            <LocationOnOutlinedIcon /> &nbsp;
+            <Typography variant="h6"> {props.city}</Typography>
           </div>
-        </Container>
-        <div>
-          <Container className={classes.desktopView}>
+          <Link className={classes.button} to="/favorites">
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<FavoriteIcon />}
+              onClick={handleClick}
+            >
+              Favorites
+            </Button>
+          </Link>
+        </div>
+      </Container>
+      <Container>
+        <div className={classes.grid}>
+          <Container className={classes.mainTemp}>
             <div className={classes.tempToday}>
               <Typography variant="h1">{props.temp}&deg;</Typography>
               <Typography variant="h6">
                 <FontAwesomeIcon
-                  icon={props.weatherIcon(props.weatherId,props.hour)}
+                  icon={props.weatherIcon(props.weatherId, props.hour)}
                   className={classes.icon}
                 />
                 &nbsp;
@@ -122,31 +142,61 @@ export default function WeatherLayout(props) {
                 </div>
               </Typography>
             </div>
-            <Hidden xsDown>
-              <SearchDesktop loadWeather={props.loadWeather} />
-            </Hidden>
           </Container>
+
+          <Hidden smDown>
+            <div className={classes.desktopSearch}>
+                <SearchDesktop loadWeather={props.loadWeather} />
+            </div>
+          </Hidden>
+
+          <div className={classes.hourly}>
+            <Paper className={classes.topPage}>
+              <Container>
+                <Typography>EVERY 3 HOURS</Typography>
+                <hr className={classes.hr}></hr>
+                <Hourly
+                  tempHourly={props.tempHourly}
+                  weatherIcon={props.weatherIcon}
+                />
+              </Container>
+            </Paper>
+          </div>
+
           <div>
-            <Hourly
-              tempHourly={props.tempHourly}
-              weatherIcon={props.weatherIcon}
-            />
+            <Paper className={classes.gridItem}>
+              <Container>
+                <Typography>NEXT 5 DAYS</Typography>
+                <hr className={classes.hr}></hr>
+                <List
+                  tempNextDays={props.tempNextDays}
+                  weatherIcon={props.weatherIcon}
+                />
+              </Container>
+            </Paper>
+          </div>
+
+          <div>
+            <Paper className={classes.gridItem}>
+              <Container>
+                <Typography>DETAILS</Typography>
+                <hr className={classes.hr}></hr>
+                <Details details={props.details} />
+              </Container>
+            </Paper>
           </div>
         </div>
-      </div>
-      <section className={classes.section}>
-        <div className={classes.listBox}>
-          <Container>
-            <Typography className={classes.fontWeight}>NEXT 5 DAYS</Typography>
-            <hr className={classes.hr}></hr>
-            <List
-              tempNextDays={props.tempNextDays}
-              weatherIcon={props.weatherIcon}
-            />
-          </Container>
-        </div>
-        <Details details={props.details} />
-      </section>
+      </Container>
+      <Snackbar
+        open={props.error}
+        autoHideDuration={3000}
+        onClose={props.handleErrorClose}
+        className={classes.snackbar}
+      >
+        <Alert onClose={props.handleErrorClose} severity="error">
+          Wrong town name!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

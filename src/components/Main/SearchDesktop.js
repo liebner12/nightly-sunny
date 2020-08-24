@@ -3,42 +3,25 @@ import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
-import MuiAlert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles({
-  overlay: {
+  root: {
     display: "grid",
     placeContent: "center",
-    padding: "2rem",
-    width: "50%",
-    height: "100%",
-    background: "rgba(30,30,30,1)",
-    borderRadius: "10px",
-    borderBottomLeftRadius: "10px",
-    borderBottomRightRadius: "10px",
   },
   textfield: {
     margin: "1rem 0",
     width: "100%",
   },
-
   button: {
     margin: "1rem 0",
     textDecoration: "none",
   },
-  buttonSpace: {
-    
-  },
 });
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 export default function SearchDesktop(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
 
@@ -57,29 +40,17 @@ export default function SearchDesktop(props) {
     }, [ref]);
   }
 
-  const handleClick = () => {
-    if (props.error === true) {
-      setOpen(true);
-    }
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpen(false);
-  };
-
   return (
-    <div className={classes.overlay} ref={props.openSearch ? wrapperRef : null}>
+    <div className={classes.root} ref={props.openSearch ? wrapperRef : null}>
+      <Typography variant="h4"> Enter city name!</Typography>
       <form onSubmit={props.loadWeather} autoComplete="off">
         <TextField
-          label="town"
-          variant="outlined"
+          label="City"
+          variant="filled"
           className={classes.textfield}
-          name="town"
+          name="city"
+          autoFocus
         />
-        
         <Button
           variant="contained"
           color="primary"
@@ -87,17 +58,10 @@ export default function SearchDesktop(props) {
           size="large"
           startIcon={<SearchIcon />}
           type="submit"
-          onClick={handleClick}
         >
           Search
         </Button>
       </form>
-      
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error">
-          Wrong town name!
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

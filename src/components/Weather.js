@@ -2,14 +2,13 @@ import React from "react";
 import WeatherLayout from "./Main/WeatherLayout";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SearchOverlay from "./Main/SearchOverlay";
-import Navbar from "./Navbar";
-import Favorites from "./Favorites/Favorites";
+import Navbar from "./Main/Navbar";
 import tempHourly from "./Main/ResponseData/TempHourly";
 import setTempHourly from "./Main/ResponseData/SetTempHourly";
 import tempNextDays from "./Main/ResponseData/TempNextDays";
 import setTempNextDays from "./Main/ResponseData/SetTempNextDays";
 import favoritesWidget from "./Favorites/FavoritesWidget";
-import setFavoritesWidget from "./Favorites/FavoritesWidget";
+import FavoritesLayout from "./Favorites/FavoritesLayout";
 import {
   faCloudSun,
   faCloudRain,
@@ -36,6 +35,7 @@ class Weather extends React.Component {
       temp: 0,
       navbarValue: 0,
       error: false,
+      warning: false,
       weatherId: 201,
       icon: "faCloudSun",
       openSearch: false,
@@ -55,12 +55,17 @@ class Weather extends React.Component {
       tempNextDays,
       favList: [],
     };
+    this.handleDeletion = this.handleDeletion.bind(this);
   }
 
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(this.getWeatherByLoc);
-    if (window.location.href.split("/")[3] == "favorites") {
+    if (window.location.href.split("/")[3] === "favorites") {
       this.setState({ navbarValue: "favorites" });
+    }
+    if (localStorage != null) {
+      const list = localStorage.getItem("list");
+      this.setState({ favList: list == null ? [] : JSON.parse(list) });
     }
   }
 
@@ -74,60 +79,77 @@ class Weather extends React.Component {
 
   getWeather = async (e) => {
     e.preventDefault();
-    const town = e.target.elements.town.value;
-    if (town !== "") {
+    const city = e.target.elements.city.value;
+    if (city !== "") {
       const api_call = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${town}&appid=${API_KEY}`
-      ).catch(
-        this.setState({
-          error: true,
-        })
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}`
       );
       const response = await api_call.json();
-      this.state.navbarValue === "favorites"
-        ? this.addFavorite(response)
-        : this.getResults(response);
+      if (response.cod === "404") {
+        this.setState({
+          error: true,
+        });
+      } else {
+        this.state.navbarValue === "favorites"
+          ? this.addFavorite(response)
+          : this.getResults(response);
+      }
     }
   };
 
   addFavorite(response) {
-    this.setState({
-      favoritesWidget: [
-        {
-          date: this.toDate(response.list[0].dt_txt),
-          hour: this.toHour(response.list[0].dt_txt),
-          city: response.city.name,
-          temp: this.toCelsius(response.list[0].main.temp),
-          weatherId: response.list[0].weather[0].id,
-          weatherType: response.list[0].weather[0].main,
-        },
-        {
-          favoritesTempNextDays: [
-            {
-              date: this.toDate(response.list[8].dt_txt),
-              hour: this.toHour(response.list[8].dt_txt),
-              temp: this.toCelsius(response.list[8].main.temp),
-              weatherId: response.list[8].weather[0].id,
-            },
-            {
-              date: this.toDate(response.list[16].dt_txt),
-              hour: this.toHour(response.list[16].dt_txt),
-              temp: this.toCelsius(response.list[16].main.temp),
-              weatherId: response.list[16].weather[0].id,
-            },
-            {
-              date: this.toDate(response.list[24].dt_txt),
-              hour: this.toHour(response.list[24].dt_txt),
-              temp: this.toCelsius(response.list[24].main.temp),
-              weatherId: response.list[24].weather[0].id,
-            },
-          ],
-        },
-      ],
-    });
-    this.setState({
-      favList: [...this.state.favList, this.state.favoritesWidget],
-    })
+    if (
+      !this.state.favList.some((item) => item[0].city === response.city.name)
+    ) {
+      this.setState({
+        favoritesWidget: [
+          {
+            date: this.toDate(response.list[0].dt_txt),
+            hour: this.toHour(response.list[0].dt_txt),
+            city: response.city.name,
+            temp: this.toCelsius(response.list[0].main.temp),
+            weatherId: response.list[0].weather[0].id,
+            weatherType: response.list[0].weather[0].main,
+          },
+          {
+            favoritesTempNextDays: [
+              {
+                date: this.toDate(response.list[8].dt_txt),
+                hour: this.toHour(response.list[8].dt_txt),
+                temp: this.toCelsius(response.list[8].main.temp),
+                weatherId: response.list[8].weather[0].id,
+              },
+              {
+                date: this.toDate(response.list[16].dt_txt),
+                hour: this.toHour(response.list[16].dt_txt),
+                temp: this.toCelsius(response.list[16].main.temp),
+                weatherId: response.list[16].weather[0].id,
+              },
+              {
+                date: this.toDate(response.list[24].dt_txt),
+                hour: this.toHour(response.list[24].dt_txt),
+                temp: this.toCelsius(response.list[24].main.temp),
+                weatherId: response.list[24].weather[0].id,
+              },
+              {
+                date: this.toDate(response.list[32].dt_txt),
+                hour: this.toHour(response.list[32].dt_txt),
+                temp: this.toCelsius(response.list[32].main.temp),
+                weatherId: response.list[32].weather[0].id,
+              },
+            ],
+          },
+        ],
+      });
+      this.setState({
+        favList: [...this.state.favList, this.state.favoritesWidget],
+      });
+      localStorage.setItem("list", JSON.stringify(this.state.favList));
+    } else {
+      this.setState({
+        warning: true,
+      });
+    }
   }
 
   getResults(response) {
@@ -161,7 +183,6 @@ class Weather extends React.Component {
         this.toHour
       ),
     });
-    
   }
 
   weatherIcon(weatherId, hour) {
@@ -219,6 +240,26 @@ class Weather extends React.Component {
     });
   };
 
+  handleErrorClose = (event, reason) => {
+    this.setState({
+      error: false,
+      warning: false,
+    });
+    if (reason === "clickaway") {
+      return;
+    }
+  };
+
+  handleDeletion(id) {
+    const array = this.state.favList.filter(function (value, index, arr) {
+      return index !== id;
+    });
+    this.setState({
+      favList: array,
+    });
+    localStorage.setItem("list", JSON.stringify(array));
+  }
+
   render() {
     return (
       <Router>
@@ -226,6 +267,7 @@ class Weather extends React.Component {
           handleSearchOpen={this.handleSearchOpen}
           navbarValue={this.state.navbarValue}
           handleNavClick={this.handleNavClick}
+          textInput={this.textInput}
         />
         <Switch>
           <Route path="/" exact>
@@ -244,23 +286,28 @@ class Weather extends React.Component {
               tempHourly={this.state.tempHourly}
               details={this.state.details}
               handleNavClick={this.handleNavClick}
+              handleErrorClose={this.handleErrorClose}
             />
             <SearchOverlay
-              navbarValue={this.state.navbarValue}
               loadWeather={this.getWeather}
               error={this.state.error}
               handleSearchOpen={this.handleSearchOpen}
               openSearch={this.state.openSearch}
               handleNavClick={this.handleNavClick}
+              textInput={this.textInput}
             />
           </Route>
           <Route path="/favorites">
-            <Favorites
+            <FavoritesLayout
               favList={this.state.favList}
               handleNavClick={this.handleNavClick}
               loadWeather={this.getWeather}
               favoritesWidget={this.state.favoritesWidget}
               weatherIcon={this.weatherIcon}
+              error={this.state.error}
+              handleErrorClose={this.handleErrorClose}
+              warning={this.state.warning}
+              handleDeletion={this.handleDeletion}
             />
           </Route>
         </Switch>

@@ -32,6 +32,7 @@ const favoritesWidget = [
         temp: 0,
         weatherId: 801,
       },
+      
     ],
   },
 ];
