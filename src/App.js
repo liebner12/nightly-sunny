@@ -6,7 +6,6 @@ import Weather from "./components/Weather";
 import "fontsource-oswald/500.css";
 import yellow from "@material-ui/core/colors/yellow";
 import blue from "@material-ui/core/colors/blue";
-import indigo from "@material-ui/core/colors/indigo";
 import "./App.css";
 
 function App() {
@@ -21,7 +20,7 @@ function App() {
           },
           background: {
             default: prefersDarkMode ? "#303030" : blue[500],
-            paper: prefersDarkMode ? indigo[500] : yellow[300],
+            paper: prefersDarkMode ? "#1976d2" : yellow[300],
           },
           navbar: {
             background: prefersDarkMode ? "rgb(35,35,35)" : blue[400],
