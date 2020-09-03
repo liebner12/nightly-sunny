@@ -59,7 +59,7 @@ class Weather extends React.Component {
   }
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(this.getWeatherByLoc);
+    this.weatherLoc(this.getWeatherByLoc);
     if (window.location.href.split("/")[3] === "favorites") {
       this.setState({ navbarValue: "favorites" });
     }
@@ -213,7 +213,9 @@ class Weather extends React.Component {
         return faCloud;
     }
   }
-
+  weatherLoc(getWeatherByLoc){
+    navigator.geolocation.getCurrentPosition(getWeatherByLoc);
+  }  
   toCelsius(temp) {
     return Math.floor(temp - 273.15);
   }
@@ -284,11 +286,13 @@ class Weather extends React.Component {
               weatherId={this.state.weatherId}
               weatherIcon={this.weatherIcon}
               weatherType={this.state.weatherType}
+              weatherLoc={this.weatherLoc}
               tempNextDays={this.state.tempNextDays}
               tempHourly={this.state.tempHourly}
               details={this.state.details}
               handleNavClick={this.handleNavClick}
               handleErrorClose={this.handleErrorClose}
+              getWeatherByLoc={this.getWeatherByLoc}
             />
             <SearchOverlay
               loadWeather={this.getWeather}

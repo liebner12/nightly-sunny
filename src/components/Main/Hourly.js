@@ -25,7 +25,7 @@ export default function Hourly({ tempHourly, weatherIcon }) {
       {tempHourly.map((item, id) => (
         <div className={classes.item} key={id}>
           <Typography gutterBottom>{item.hour}</Typography>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" component="h2" gutterBottom>
             <FontAwesomeIcon icon={weatherIcon(item.weatherId, item.hour)} />
           </Typography>
           <Typography>{item.temp}&deg;C</Typography>

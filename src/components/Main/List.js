@@ -20,7 +20,7 @@ export default function List({ tempNextDays, weatherIcon }) {
       {tempNextDays.map((item, id) => (
         <div key={id}>
           <Typography gutterBottom>{item.date}</Typography>
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" component="h2" gutterBottom>
             <FontAwesomeIcon icon={weatherIcon(item.weatherId, item.hour)} />
           </Typography>
           <Typography>{item.temp}&deg;C</Typography>

@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
   cityText: {
     display: "flex",
     alignItems: "center",
+    cursor: "pointer",
   },
   mainTemp: {
     marginTop: "9rem",
@@ -102,11 +103,15 @@ export default function WeatherLayout(props) {
   const handleClick = () => {
     props.handleNavClick("favorites");
   };
+  const handleLocationClick = () => {
+    props.weatherLoc(props.getWeatherByLoc);
+    console.log("asdf");
+  };
   return (
     <div>
       <Container>
         <div className={classes.topNav}>
-          <div className={classes.cityText}>
+          <div className={classes.cityText} onClick={handleLocationClick}>
             <LocationOnOutlinedIcon /> &nbsp;
             <Typography variant="h6"> {props.city}</Typography>
           </div>
@@ -128,7 +133,7 @@ export default function WeatherLayout(props) {
           <Container className={classes.mainTemp}>
             <div className={classes.tempToday}>
               <Typography variant="h1">{props.temp}&deg;</Typography>
-              <Typography variant="h6">
+              <Typography variant="h6" component="h2">
                 <FontAwesomeIcon
                   icon={props.weatherIcon(props.weatherId, props.hour)}
                   className={classes.icon}
@@ -146,7 +151,7 @@ export default function WeatherLayout(props) {
 
           <Hidden smDown>
             <div className={classes.desktopSearch}>
-                <SearchDesktop loadWeather={props.loadWeather} />
+              <SearchDesktop loadWeather={props.loadWeather} />
             </div>
           </Hidden>
 

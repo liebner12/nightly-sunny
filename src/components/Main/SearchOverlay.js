@@ -5,6 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
 import Paper from "@material-ui/core/paper";
+import InputLabel from "@material-ui/core/InputLabel";
 const useStyles = makeStyles((theme) => ({
   overlay: {
     display: "grid",
@@ -74,8 +75,10 @@ export default function SearchOverlay(props) {
     >
       <Container>
         <form onSubmit={props.loadWeather} autoComplete="off">
+          <InputLabel for="city">Enter city name:</InputLabel>
           <TextField
             label="City"
+            for="city"
             variant="outlined"
             className={classes.textfield}
             name="city"
